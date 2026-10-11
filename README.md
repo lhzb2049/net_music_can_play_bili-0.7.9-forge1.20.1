@@ -92,7 +92,7 @@ MP4 / Pad 手持播放器与全息眼镜等一套"媒体硬件"。
 
 An **unofficial Forge 1.20.1 port** of
 [NetMusicCanPlayBili](https://github.com/zhongbai2333/NetMusicCanPlayBili) (based on the
-NeoForge 1.21.1 branch by [wrdqtww](https://github.com/wrdqtww/NetMusicCanPlayBili-1.21.1)).
+NeoForge 1.21.1 branch by [lhzb2049](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
 
 It adds **Bilibili video / live audio** playback to [NetMusic](https://modrinth.com/mod/netmusic):
 write a Bilibili link (`BV`/`av`) into a music CD to play its audio, or type `live:<roomId>`
