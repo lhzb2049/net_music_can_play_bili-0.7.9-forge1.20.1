@@ -3,7 +3,8 @@
 [中文](#中文) · [English](#english)
 
 > **本仓库是 [NetMusicCanPlayBili](https://github.com/zhongbai2333/NetMusicCanPlayBili)（主线）
-> 的 Forge 1.20.1 非官方移植。**“本仓库由 MC百科用户 流火之冰 维护
+> 的 Forge 1.20.1 非官方移植。** 本仓库由 MC百科用户 流火之冰 维护。
+> **参考/姊妹工程：[NetMusicCanPlayBili-NEOforge1.21.1](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)**（NeoForge 1.21.1 移植）。
 > 上游 / 分支 / 移植三者版权与许可见 [LICENSE](LICENSE)。
 
 ---
@@ -81,6 +82,7 @@ MP4 / Pad 手持播放器与全息眼镜等一套"媒体硬件"。
 
 * 原模组与主线：© [zhongbai233](https://github.com/zhongbai2333/NetMusicCanPlayBili)
 * NeoForge 1.21.1 分支：© [lhzb2049](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
+* **参考/姊妹工程**：[NetMusicCanPlayBili-NEOforge1.21.1](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
 * Forge 1.20.1 移植：© [lhzb2049](https://github.com/lhzb2049)
 
 **非官方移植**，与原作者及分支作者无隶属关系；问题请提到本仓库。
@@ -92,7 +94,7 @@ MP4 / Pad 手持播放器与全息眼镜等一套"媒体硬件"。
 
 An **unofficial Forge 1.20.1 port** of
 [NetMusicCanPlayBili](https://github.com/zhongbai2333/NetMusicCanPlayBili) (based on the
-NeoForge 1.21.1 branch by [lhzb2049](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
+NeoForge 1.21.1 branch by [lhzb2049](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)).
 
 It adds **Bilibili video / live audio** playback to [NetMusic](https://modrinth.com/mod/netmusic):
 write a Bilibili link (`BV`/`av`) into a music CD to play its audio, or type `live:<roomId>`
@@ -122,3 +124,6 @@ no corresponding main mod on 1.20.1 — **Create: Aeronautics has no official 1.
 so nothing here depends on it.
 
 **License**: MIT — see [LICENSE](LICENSE). Unofficial port; issues belong in this repository.
+
+**Reference / sister project**: [NetMusicCanPlayBili-NEOforge1.21.1](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
+(the NeoForge 1.21.1 port by the same author).

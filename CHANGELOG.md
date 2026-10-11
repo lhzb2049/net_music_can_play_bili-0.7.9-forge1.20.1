@@ -5,7 +5,10 @@
 
 ## [0.7.9-beta+forge1.20.1] - 2026-10-11
 
-首个公开的 Forge 1.20.1 移植版（基线：NeoForge 1.21.1 分支 `0.7.9-beta.3`）。
+首个公开的 Forge 1.20.1 移植版（基线：NeoForge 1.21.1 构建 `0.7.9-beta.3+neo1.21.1`）。
+
+**参考/姊妹工程**：[NetMusicCanPlayBili-NEOforge1.21.1](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
+（NeoForge 1.21.1 移植，同一作者）。
 
 ### Added
 
