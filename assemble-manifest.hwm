@@ -1,0 +1,2 @@
+186
+# 2026-10-11 12:11:37  register 抬高：第 104 次：给全息眼镜世界屏加心跳诊断（enabled/绑定数/本帧已提交/绑定摘要），并把'戴上→有绑定→找得到帧'三道门一次打出来；同时在 HolographicGlassesClient 增加 describeBindings() 供探针使用

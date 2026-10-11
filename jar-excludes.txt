@@ -1,0 +1,13 @@
+# 发布包（jar）里要排除的路径 —— 一行一个，`#` 开头是注释，空行忽略。
+#
+# 为什么单独一个文件（而不是写在 build.gradle 里）：
+#   本工程第 86 次踩过"build.gradle 里那段配置被脚本整体重写 ⇒ 手写的排除项被静默抹掉"，
+#   所以纪律是：**排除项一律放在文件里**，build.gradle 只负责读。
+#   编译期的排除走 `deferred-excludes.txt`（由 tools/deferred_cut.py 唯一写入）；
+#   这里的 `jar-excludes.txt` 只影响**打包**（类仍然会被编译，供门禁使用）。
+#
+# 现有条目：
+#   * P0ReobfProbe —— 重混淆门禁的构建期自检类。它必须留在 dev 产物里
+#     （tools/check_reobf.ps1 现在改用随包发布的 BlockEntityRenderBounds 做断言，
+#      但仍按老规矩保留该探针供其它检查使用），只是**不该进发布包**。
+com/zhongbai233/net_music_can_play_bili/P0ReobfProbe*.class

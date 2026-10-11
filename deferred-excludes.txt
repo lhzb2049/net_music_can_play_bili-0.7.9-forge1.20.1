@@ -1,0 +1,13 @@
+# 未完成层清单（NCPB-DEFERRED-CUT）—— 生效中的 exclude 条目，一行一个。
+#
+# 路径相对 ncpb-assembled/src/main/java。`#` 开头是注释，空行忽略。
+#
+# ⚠️ 不要手改这个文件。
+#   增： python tools/deferred_cut.py add <路径...>
+#   删： python tools/deferred_cut.py remove <路径...> --reason "为什么可以放回来"
+#   查： python tools/deferred_cut.py check
+# 手改短了会被 deferred-excludes.hwm（水位线）抓到。
+#
+# 这些文件不是"不存在"，是"还没移植完"：删掉对应行即可让它们重新参与编译，
+# 但各自的 1.21→1.20.1 API 缺口要先解决。清单本身也是 Milestone B 的待办表。
+

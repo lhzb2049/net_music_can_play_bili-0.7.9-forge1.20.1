@@ -1,0 +1,129 @@
+package com.zhongbai233.net_music_can_play_bili.block;
+
+import com.zhongbai233.net_music_can_play_bili.port.diag.UseDiag;
+
+import net.minecraft.world.InteractionHand;
+import com.zhongbai233.net_music_can_play_bili.blockentity.SpeakerBlockEntity;
+import com.zhongbai233.net_music_can_play_bili.client.SpeakerClient;
+import com.zhongbai233.net_music_can_play_bili.link.AudioLinkIndex;
+import com.zhongbai233.net_music_can_play_bili.link.LinkHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.StateDefinition.Builder;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+public class SpeakerBlock extends Block implements EntityBlock {
+   public static final BooleanProperty ACTIVATED = BooleanProperty.create("activated");
+   public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+   private static final VoxelShape SHAPE = Block.box(3.0, 0.0, 3.0, 13.0, 10.0, 13.0);
+
+   public SpeakerBlock(Properties properties) {
+      super(properties.sound(SoundType.WOOD).strength(2.0F).lightLevel(state -> state.getValue(ACTIVATED) ? 10 : 0).noOcclusion());
+      this.registerDefaultState((BlockState)((BlockState)((BlockState)this.stateDefinition.any()).setValue(ACTIVATED, false)).setValue(FACING, Direction.NORTH));
+   }
+
+
+   protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
+      builder.add(new Property[]{ACTIVATED, FACING});
+   }
+
+   public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+      return (BlockState)this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection());
+   }
+
+   public BlockState rotate(BlockState state, Rotation rotation) {
+      return (BlockState)state.setValue(FACING, rotation.rotate((Direction)state.getValue(FACING)));
+   }
+
+   public BlockState mirror(BlockState state, Mirror mirror) {
+      return this.rotate(state, mirror.getRotation((Direction)state.getValue(FACING)));
+   }
+
+   public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+      return new SpeakerBlockEntity(pos, state);
+   }
+
+   public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+      return SHAPE;
+   }
+
+   public RenderShape getRenderShape(BlockState state) {
+      return RenderShape.MODEL;
+   }
+
+   public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+      super.setPlacedBy(level, pos, state, placer, stack);
+      if (!level.isClientSide()) {
+         applyLinkedPosition(level, pos, stack, placer);
+      }
+   }
+
+   private static void applyLinkedPosition(Level level, BlockPos pos, ItemStack stack, LivingEntity placer) {
+      BlockPos linkedPos = LinkHelper.readLinkFromItem(stack);
+      if (linkedPos != null) {
+         if (level.getBlockEntity(pos) instanceof SpeakerBlockEntity speaker) {
+            speaker.linkTo(linkedPos);
+            if (!(placer instanceof Player player && player.isCreative())) {
+               LinkHelper.clearLinkFromItem(stack);
+            }
+         }
+      }
+   }
+   /**
+    * 【第 91 次：右键入口修复】1.21 把方块交互拆成 `useItemOn`（手持物品）与 `useWithoutItem`（空手），
+    * 而 1.20.1 **只有** `use(BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult)`
+    * （javap 实证：BlockBehaviour 里没有 useItemOn/useWithoutItem）。
+    * 所以原来的两个方法名**不是重写、永远不会被调用** —— 表现就是"右键方块毫无反应，连 GUI 都不尝试打开"。
+    * 这里按 1.21 的语义接起来：手持物品那条先走；它返回 PASS（"不是我的物品"）时再走空手那条
+    * （对应 1.21 的 PASS_TO_DEFAULT_BLOCK_INTERACTION 落到同方块的空手处理）。
+    */
+   @Override
+   public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+      UseDiag.enter("speaker", level, player, hand);
+      return UseDiag.exit("speaker", this.ncpb$useEmpty(state, level, pos, player, hitResult));
+   }
+
+
+   private InteractionResult ncpb$useEmpty(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+      if (!player.mayBuild()) {
+         return InteractionResult.PASS;
+      } else {
+         if (level.isClientSide()) {
+            SpeakerClient.openScreen(pos);
+         }
+
+         return InteractionResult.SUCCESS;
+      }
+   }
+
+   public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+      if (level instanceof ServerLevel serverLevel && (movedByPiston || !state.is(newState.getBlock()))) {
+         AudioLinkIndex.removeSpeakerEndpoint(serverLevel, null, pos);
+      }
+
+      super.onRemove(state, level, pos, newState, movedByPiston);
+   }
+}

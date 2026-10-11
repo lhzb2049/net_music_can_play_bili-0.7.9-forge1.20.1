@@ -1,0 +1,7 @@
+﻿# 构建产物 / Gradle 状态
+build/
+.gradle/
+*.log
+
+# 上游制品（port_data_files.py 需要时自行放到 upstream/ 下）
+upstream/

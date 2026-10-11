@@ -1,0 +1,59 @@
+modLoader="javafml"
+loaderVersion="[46,)"
+license="MIT"
+
+[[mods]]
+modId="net_music_can_play_bili"
+version="0.7.9-beta+forge1.20.1"
+displayName="Net Music Can Play Bili"
+# 1.20.1 的 Forge 用这个字段找图标（文件放在 jar 根部，取自上游 MIT 资源）。
+logoFile="logo.png"
+authors="zhongbai233"
+credits='''Forge 1.20.1 移植：lhzb2049。
+上游：zhongbai233（主线）/ wrdqtww（NeoForge 1.21.1 分支）。
+本移植为非官方移植，问题请提到本仓库。'''
+displayURL="https://github.com/lhzb2049/net_music_can_play_bili-0.7.9-forge1.20.1"
+issueTrackerURL="https://github.com/lhzb2049/net_music_can_play_bili-0.7.9-forge1.20.1/issues"
+description='''Adds Bilibili video audio support to NetMusic.
+
+把 B 站视频链接（BV/av）写进音乐 CD 即可播放其音频；广播喇叭里输入 live:直播间ID 播放直播音频；
+另有视频投影仪、歌词投影仪、中控台、MP4/Pad 手持播放器等方块与物品。
+
+本包是上述模组的 **Forge 1.20.1 非官方移植**（基线取自 NeoForge 1.21.1 分支）。'''
+
+[[dependencies.net_music_can_play_bili]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.net_music_can_play_bili]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.net_music_can_play_bili]]
+    modId="netmusic"
+    mandatory=true
+    versionRange="[1.5.2,)"
+    ordering="AFTER"
+    side="BOTH"
+
+# 可选前置：Iris 系光影（1.20.1 Forge 上通常是 Oculus）。缺它也能正常游玩，
+# 只是没有"开了光影之后的自订 YUV 兼容路线"。
+[[dependencies.net_music_can_play_bili]]
+    modId="oculus"
+    mandatory=false
+    versionRange="[1.6,)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.net_music_can_play_bili]]
+    modId="iris"
+    mandatory=false
+    versionRange="[1.6,)"
+    ordering="AFTER"
+    side="CLIENT"

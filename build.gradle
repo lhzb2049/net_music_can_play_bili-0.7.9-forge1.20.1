@@ -1,0 +1,206 @@
+// NetMusicCanPlayBili —— Minecraft 1.20.1 / Forge 移植工程
+//
+// 配置基线 = **官方 MDK**（forge-1.20.1-47.4.26-mdk.zip，已解到 ../\_mdk 供逐行对照）：
+//   Gradle 8.8 · plugins DSL · net.minecraftforge.gradle [6.0,6.2) · official 映射 / 1.20.1
+//   · java.toolchain 17（缺失时由 settings.gradle 的 foojay 解析器补，本机用
+//     gradle.properties 里指定的便携 JDK 17，不联网）· repositories 留空（FG 自动挂
+//     Forge maven + Maven Central）· jar finalizedBy reobfJar（产物必须重混淆回 SRG）。
+//
+// 相对 MDK 的差异只有三处，分别标注为「差异 1/2/3」。
+plugins {
+    id 'eclipse'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    // MixinGradle：负责把 Annotation Processor 的参数（outRefMapFile 等）接好，
+    // 并把 refmap 打进产物、给 dev run 注册配置。版本取 Sponge 仓库的最新发布版
+    // （maven-metadata 里最后一个 release：0.7.38）。
+    id 'org.spongepowered.mixin' version '0.7.38'
+    id 'java'
+}
+
+version = mod_version
+group = mod_group_id
+base { archivesName = mod_id }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'   // 源码里有中文字面量
+    // 移植期临时调高：默认 -Xmaxerrs 100 会把报错截断，看到的数不是真实数
+    options.compilerArgs << '-Xmaxerrs' << '100000'
+    options.compilerArgs << '-AdisableTargetValidator=true' << '-AdisableTargetExport=true'
+    options.forkOptions.jvmArgs << '-Duser.language=en' << '-Duser.country=US'
+}
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+
+    // 差异 1：AT 与 Mixin 的 dev 侧配置。MDK 默认注释掉了 AT，并把 mixin 相关留给用户加。
+    // 1.20.1 上 Mixin 的 refmap 是必需的（运行期目标是 SRG 名，见 HANDOVER §3.1），
+    // 所以这里显式给出 remapRefMap 与 refMapRemappingFile。
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {}
+
+        server {
+            args '--nogui'
+        }
+    }
+}
+
+// Mixin 接线 —— 1.20.1 Forge 的两条硬要求（都由真实 mod 产物核对过，见 tools/README.md 第 12 条）：
+//  * `mixins.json` 里必须有 `"refmap"`，而这个 refmap 必须由 Annotation Processor 真的生成
+//    （运行期目标是 SRG 名，没有 refmap 就是"补丁静默不生效"）；
+//  * 配置的**发现方式**是 jar manifest 的 `MixinConfigs` —— 不是 mods.toml 的 `[[mixins]]`（那是 NeoForge）。
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+    // 本模组有相当多 mixin 的**目标是自己的类**（如 `*PacketSubLevelScopeMixin` 注入自家
+    // `handle`）。这类目标在运行期**不会被重映射**，所以 Mixin AP 找不到"官方名→SRG名"
+    // 的映射，会报 `Unable to locate obfuscation mapping for @Inject target ...`（实测 37 条）。
+    // 那两个开关正是为这种情况准备的：关掉目标校验/导出。
+    disableTargetValidator = true
+    disableTargetExport = true
+}
+
+// 差异 2：netmusic 是硬依赖（53 个文件 / 30 个类型用到它的 API，含它 shade 进来的 soundlibs.*）。
+// MDK 的注释说"ForgeGradle 会自动帮你加 Forge maven 与 Maven Central"，实测确实如此
+// （工程 repositories 里能看到自动挂上的 maven.minecraftforge.net 与 libraries.minecraft.net）；
+// Modrinth 必须自己声明。
+repositories {
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
+    }
+    flatDir { dir 'libs' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // Mixin Annotation Processor：生成 refmap（把官方名映射到运行期的 SRG 名）
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    // 必须 fg.deobf：1.20.1 的 netmusic 是生产 jar，凡覆写 MC 方法处都是 SRG 名
+    // （实测 NetMusicAudioStream.m_7118_ = read、BigMegaphoneScreen.m_88315_ = render 等）。
+    // 台账见 ../netmusic-api-diff.md（由 ../tools/netmusic_api_ledger.ps1 生成）。
+    compileOnly fg.deobf("maven.modrinth:net-music:${netmusic_version}")
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : 'zhongbai233',
+                'Specification-Version'   : '1',
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : 'zhongbai233',
+                // 1.20.1 Forge 靠这个属性发现 mixin 配置（NeoForge 才用 mods.toml 的 [[mixins]]）。
+                // 实测三个真实 1.20.1 mod 都是这么声明的。
+                'MixinConfigs'            : "${mod_id}.mixins.json"
+        ])
+    }
+    // 发布卫生（第 105 次）：打包排除项也**放在文件里**（`jar-excludes.txt`），
+    // 不写字面量 —— 与编译期排除（`deferred-excludes.txt`）同一套纪律：
+    // build.gradle 只负责读，免得配置被脚本整体重写时手写条目被静默抹掉（第 86 次的教训）。
+    // 这里目前排除的是重混淆门禁的构建期自检类（它要留在 dev 产物里、但不该进发布包）。
+    def ncpbJarExcludeFile = file('jar-excludes.txt')
+    if (ncpbJarExcludeFile.exists()) {
+        ncpbJarExcludeFile.readLines()
+                .collect { it.trim() }
+                .findAll { it && !it.startsWith('#') }
+                .each { exclude it }
+    }
+    // 1.20.1 的产物必须重混淆回 SRG，否则游戏里 NoSuchMethodError / Mixin 找不到目标
+    finalizedBy 'reobfJar'
+}
+
+// ===== 差异 3：阶段 0 的门禁出口任务（正式构建不依赖它们，详见 ../tools/README.md）=====
+
+// 把官方名编译类路径导出成文件，供离线 javac 迭代（HANDOVER §8 铁律 1）。
+tasks.register('dumpCompileClasspath') {
+    def outFile = layout.buildDirectory.file('compile-classpath.txt')
+    doLast {
+        def f = outFile.get().asFile
+        f.parentFile.mkdirs()
+        f.text = configurations.compileClasspath.files.join(System.lineSeparator())
+        println "compileClasspath -> ${f}  (${configurations.compileClasspath.files.size()} 项)"
+    }
+}
+
+// 诊断：把 ForgeGradle 解析 mappings 的链路问清楚。
+// 背景：OfficialChannelProvider 把"任一为 null"一律报成 missing ProGuard mappings / missing MCP's tsrg，
+// 而 MavenArtifactDownloader 又会吞掉真实异常返回 null，所以需要能单独问这几个坐标
+// （配合 -Dnet.minecraftforge.gradle.repo.debug=true 看仓库级日志）。
+tasks.register('probeMappings') {
+    doLast {
+        def dl = net.minecraftforge.gradle.common.util.MavenArtifactDownloader
+        println "=== 工程 repositories（FG 会自动挂 Forge/Mojang maven）==="
+        project.repositories.eachWithIndex { r, i ->
+            def url = r.metaClass.hasProperty(r, 'url') ? r.url : '(no url)'
+            println "  [$i] ${r.name}  ${url}"
+        }
+        [['mcp_config:1.20.1', { net.minecraftforge.gradle.common.util.MavenArtifactDownloader.manual(project, 'de.oceanlabs.mcp:mcp_config:1.20.1@zip', false) }],
+         ['client mappings@txt', { dl.generate(project, 'net.minecraft:client:1.20.1:mappings@txt', true) }],
+         ['server mappings@txt', { dl.generate(project, 'net.minecraft:server:1.20.1:mappings@txt', true) }],
+         ['mappings_official@zip', { dl.generate(project, 'net.minecraft:mappings_official:1.20.1@zip', true) }]].each { name, action ->
+            try {
+                println "PROBE ${name} -> ${action()}"
+            } catch (Throwable t) {
+                println "PROBE ${name} -> THREW ${t}"
+            }
+        }
+    }
+}
+
+// ==== NCPB-DEFERRED-CUT ====
+// 未完成层清单**外置**在 deferred-excludes.txt：一行一个路径（相对 src/main/java），
+// `#` 开头是注释，空行忽略。水位线在 deferred-excludes.hwm，流水在
+// deferred-excludes.log，读写的唯一入口是 ../tools/deferred_cut.py。
+//
+// 为什么外置（第 87 次）：这段原来把条目**写死在 build.gradle 里**，被脚本反复整体
+// 重写，于是"每轮拿当前日志重算"会把上一轮的条目悄悄丢掉 —— 清单变短，构建照样跑。
+// 丢掉了看不出来，这是最难查的一类错。现在条目在构建脚本之外，重写 build.gradle
+// 碰不到它；手改短了会被 check 的水位线抓到。
+//
+// 两条硬规矩：
+//   * 清单缺失 = 配置期直接失败。不允许"清单没了所以什么都不排除"这种静默降级。
+//   * 每次配置都打印生效条数 —— 作为"清单真的到达了编译器"的证据（check 的 G5）。
+// ⚠️ 下面这行**只用 ASCII**：build.gradle 在中文 Windows 上可能被按 GBK 解码，
+// 中文会变成乱码，G5 就再也匹配不到了。注释里用中文没关系，打印的字符串不行。
+def ncpbDeferredListFile = file('deferred-excludes.txt')
+if (!ncpbDeferredListFile.isFile()) {
+    throw new GradleException(
+        "NCPB-DEFERRED-CUT: missing ${ncpbDeferredListFile}. The deferred-cut list is an " +
+        "external file with a high-water-mark check; if it is gone, the build must not " +
+        "silently turn green. Rebuild it with tools/deferred_cut.py add <path>, or write " +
+        "an empty (comment-only) list to explicitly exclude nothing.")
+}
+def ncpbDeferredEntries = ncpbDeferredListFile.readLines('UTF-8')
+        .collect { it.trim() }
+        .findAll { it && !it.startsWith('#') }
+logger.lifecycle("NCPB-DEFERRED-CUT: active excludes = ${ncpbDeferredEntries.size()} (deferred-excludes.txt)")
+sourceSets {
+    main {
+        java {
+            ncpbDeferredEntries.each { exclude it }
+        }
+    }
+}
+
