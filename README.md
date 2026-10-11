@@ -3,7 +3,6 @@
 [中文](#中文) · [English](#english)
 
 > **本仓库是 [NetMusicCanPlayBili](https://github.com/zhongbai2333/NetMusicCanPlayBili)（主线）
-> / [wrdqtww 的 NeoForge 1.21.1 分支](https://github.com/wrdqtww/NetMusicCanPlayBili-1.21.1)
 > 的 Forge 1.20.1 非官方移植。**“本仓库由 MC百科用户 流火之冰 维护
 > 上游 / 分支 / 移植三者版权与许可见 [LICENSE](LICENSE)。
 
