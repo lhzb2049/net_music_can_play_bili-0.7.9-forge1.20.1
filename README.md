@@ -39,6 +39,10 @@ MP4 / Pad 手持播放器与全息眼镜等一套"媒体硬件"。
 > Forge 只会加载其中一个，症状是"新功能没反应、改动没效果"。
 > 本移植的发布命名固定为 `net_music_can_play_bili-<版本>+forge1.20.1.jar`，请只保留最新那份。
 
+> 🛠️ **想自己构建、或想看移植过程？** 见 **`source` 分支**：可构建源码（Gradle 工程）
+> \+ 9 条门禁脚本 + 移植台账（`docs/PORT-STATUS.md`、`docs/HANDOVER.md`），
+> 说明见该分支的 [BUILDING.md](https://github.com/lhzb2049/net_music_can_play_bili-0.7.9-forge1.20.1/blob/source/BUILDING.md)。
+
 ### 包含内容
 
 * 方块：现代唱片机、扬声器、直播机、**视频投影仪**、**歌词投影仪**、**中控台**（含场景编辑器界面）；
