@@ -76,8 +76,8 @@ python .\tools\assemble.py verify
 
 ## 许可
 
-MIT，见 [LICENSE](LICENSE)。原模组 © zhongbai233，NeoForge 1.21.1 分支 © wrdqtww，
+MIT，见 [LICENSE](LICENSE)。原模组 © zhongbai233，NeoForge 1.21.1 移植 © lhzb2049，
 Forge 1.20.1 移植 © 流火之冰 (lhzb2049)。**非官方移植**，问题请提到本仓库。
 
-**参考工程**：[NetMusicCanPlayBili-NEOforge1.21.1](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
-（同作者的 NeoForge 1.21.1 第三方移植）。
+**参考/姊妹工程**：[NetMusicCanPlayBili-NEOforge1.21.1](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
+（NeoForge 1.21.1 移植，同一作者）。
