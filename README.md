@@ -5,6 +5,7 @@
 > **本仓库是 [NetMusicCanPlayBili](https://github.com/zhongbai2333/NetMusicCanPlayBili)（主线）
 > / [wrdqtww 的 NeoForge 1.21.1 分支](https://github.com/wrdqtww/NetMusicCanPlayBili-1.21.1)
 > 的 Forge 1.20.1 非官方移植。**
+> 参考工程（同作者的姊妹工程）：**[NetMusicCanPlayBili-NEOforge1.21.1](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)**。
 > 上游 / 分支 / 移植三者版权与许可见 [LICENSE](LICENSE)。
 
 ---
@@ -38,6 +39,10 @@ MP4 / Pad 手持播放器与全息眼镜等一套"媒体硬件"。
 > ⚠️ **同一 modId 只放一个 jar**。如果你同时留着旧构建（哪怕文件名不同），
 > Forge 只会加载其中一个，症状是"新功能没反应、改动没效果"。
 > 本移植的发布命名固定为 `net_music_can_play_bili-<版本>+forge1.20.1.jar`，请只保留最新那份。
+
+> 🛠️ **想自己构建、或想看移植过程？** 见 **`source` 分支**：可构建源码（Gradle 工程）
+> \+ 9 条门禁脚本 + 移植台账（`docs/PORT-STATUS.md`、`docs/HANDOVER.md`），
+> 说明见该分支的 [BUILDING.md](https://github.com/lhzb2049/net_music_can_play_bili-0.7.9-forge1.20.1/blob/source/BUILDING.md)。
 
 ### 包含内容
 
@@ -78,6 +83,7 @@ MP4 / Pad 手持播放器与全息眼镜等一套"媒体硬件"。
 
 * 原模组与主线：© [zhongbai233](https://github.com/zhongbai2333/NetMusicCanPlayBili)
 * NeoForge 1.21.1 分支：© [wrdqtww](https://github.com/wrdqtww/NetMusicCanPlayBili-1.21.1)
+* 参考工程：[NetMusicCanPlayBili-NEOforge1.21.1](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)（同作者的 NeoForge 1.21.1 第三方移植）
 * Forge 1.20.1 移植：© [lhzb2049](https://github.com/lhzb2049)
 
 **非官方移植**，与原作者及分支作者无隶属关系；问题请提到本仓库。
@@ -119,3 +125,6 @@ no corresponding main mod on 1.20.1 — **Create: Aeronautics has no official 1.
 so nothing here depends on it.
 
 **License**: MIT — see [LICENSE](LICENSE). Unofficial port; issues belong in this repository.
+
+**Reference project**: [NetMusicCanPlayBili-NEOforge1.21.1](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
+(the same author's NeoForge 1.21.1 third-party port).

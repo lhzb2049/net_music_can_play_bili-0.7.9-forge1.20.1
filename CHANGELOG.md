@@ -7,6 +7,9 @@
 
 首个公开的 Forge 1.20.1 移植版（基线：NeoForge 1.21.1 分支 `0.7.9-beta.3`）。
 
+**参考工程**：[NetMusicCanPlayBili-NEOforge1.21.1](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
+（同作者的 NeoForge 1.21.1 第三方移植）。
+
 ### Added
 
 - 完整的 1.20.1 移植：方块（现代唱片机 / 扬声器 / 直播机 / 视频投影仪 / 歌词投影仪 / 中控台）、
