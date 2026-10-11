@@ -80,7 +80,7 @@ MP4 / Pad 手持播放器与全息眼镜等一套"媒体硬件"。
 **MIT**，见 [LICENSE](LICENSE)。
 
 * 原模组与主线：© [zhongbai233](https://github.com/zhongbai2333/NetMusicCanPlayBili)
-* NeoForge 1.21.1 分支：© [wrdqtww](https://github.com/wrdqtww/NetMusicCanPlayBili-1.21.1)
+* NeoForge 1.21.1 分支：© [lhzb2049](https://github.com/lhzb2049/NetMusicCanPlayBili-NEOforge1.21.1)
 * Forge 1.20.1 移植：© [lhzb2049](https://github.com/lhzb2049)
 
 **非官方移植**，与原作者及分支作者无隶属关系；问题请提到本仓库。
